@@ -50,7 +50,7 @@
     });
 
     grist.onRecord(function(record) {
-      document.getElementById('fio').textContent = record.patient_FIO;
+      document.getElementById('fio').innerText = record.patient_FIO;
       document.getElementById('vozrast').textContent = record.vozrast;
       document.getElementById('diagnoz').textContent = record.diagnoz;
       document.getElementById('data_zasedaniya').textContent = record.data_zasedaniya;
