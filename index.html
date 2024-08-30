@@ -46,7 +46,7 @@
     <script>
     grist.ready({
       requiredAccess: 'read table',
-      columns: ['fio', 'vozrast', 'diagnoz', 'data_zasedaniya', 'reabilitacionnyi_diagnoz', 'vrach_frm','fio_sotr', 'uchastie_v_mkb', 'cel', 'domen_i_ocenka_po_mkf', 'zadachi', 'metodika', 'ocenka_po_mkf_do_kursa', 'ocenka_po_mkf_posle_kursa]
+      columns: ['fio', 'vozrast', 'diagnoz', 'data_zasedaniya', 'reabilitacionnyi_diagnoz', 'vrach_frm' , 'fio_sotr', 'uchastie_v_mkb', 'cel', 'domen_i_ocenka_po_mkf', 'zadachi', 'metodika', 'ocenka_po_mkf_do_kursa', 'ocenka_po_mkf_posle_kursa]
     });
 
     grist.onRecord(function(record) {
@@ -58,6 +58,7 @@
       document.getElementById('vrach_frm').textContent = record.vrach_frm;
     });
 
+        
      grist.onRecords(function(records) {
       var tableBody = document.getElementById('Table3');
       records.forEach(function(record) {
