@@ -50,12 +50,12 @@
     });
 
     grist.onRecord(function(record) {
-      document.getElementById('fio').textContent = record.fio;
+      document.getElementById('fio').textContent = record.patient_FIO;
       document.getElementById('vozrast').textContent = record.vozrast;
       document.getElementById('diagnoz').textContent = record.Diagnoz;
       document.getElementById('data_zasedaniya').textContent = record.data_zasedaniya;
       document.getElementById('reabilitacionnyi_diagnoz').textContent = record.reabilitacionnyi_diagnoz;
-      document.getElementById('vrach_frm').textContent = record.vrach_frm;
+      document.getElementById('vrach_frm').textContent = record.doc_fio;
     });
    
         grist.ready({
