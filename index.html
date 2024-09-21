@@ -55,15 +55,15 @@
       document.getElementById('diagnoz').textContent = record.Diagnoz;
       document.getElementById('data_zasedaniya').textContent = record.data_zasedaniya;
       document.getElementById('reabilitacionnyi_diagnoz').textContent = record.reabilitacionnyi_diagnoz;
-      document.getElementById('vrach_frm').textContent = record.doc_fio;
+      document.getElementById('vrach_frm').textContent = record.vrach_frm;
     });
-   
-        grist.ready({
+
+    grist.ready({
       requiredAccess: 'read table',
-      columns: ['fio_sotr', 'uchastie_v_mkb', 'cel', 'domen_i_ocenka_po_mkf', 'zadachi', 'metodika', 'ocenka_po_mkf_do_kursa', 'ocenka_po_mkf_posle_kursa]
+      columns: ['fio_sotr', 'uchastie_v_mkb', 'cel', 'domen_i_ocenka_po_mkf', 'zadachi', 'metodika', 'ocenka_po_mkf_do_kursa', 'ocenka_po_mkf_posle_kursa']
     });
-        
-     grist.onRecords(function(records) {
+
+    grist.onRecords(function(records) {
       var tableBody = document.getElementById('Table3');
       records.forEach(function(record) {
         var row = tableBody.insertRow();
