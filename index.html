@@ -60,6 +60,8 @@
 
     // Обработка выбранной записи
     grist.onRecord(function(record) {
+      console.log("Выбранная запись:", record); // Отладка
+
       // Обновляем информацию о пациенте
       document.getElementById('fio').textContent = record.fio || '';
       document.getElementById('vozrast').textContent = record.vozrast || '';
@@ -74,29 +76,35 @@
 
     // Функция для фильтрации записей по fio
     async function filterRecordsByFio(fio) {
-      // Получаем все записи из таблицы
-      const allRecords = await grist.getAllRecords();
+      try {
+        // Получаем все записи из таблицы
+        const allRecords = await grist.getAllRecords();
+        console.log("Все записи:", allRecords); // Отладка
 
-      // Фильтруем записи по выбранному fio
-      const filteredRecords = allRecords.filter(record => record.fio === fio);
+        // Фильтруем записи по выбранному fio
+        const filteredRecords = allRecords.filter(record => record.fio === fio);
+        console.log("Отфильтрованные записи:", filteredRecords); // Отладка
 
-      // Очищаем таблицу перед добавлением новых данных
-      const tableBody = document.querySelector('#doctorsTable tbody');
-      tableBody.innerHTML = '';
+        // Очищаем таблицу перед добавлением новых данных
+        const tableBody = document.querySelector('#doctorsTable tbody');
+        tableBody.innerHTML = '';
 
-      // Добавляем отфильтрованные записи в таблицу
-      filteredRecords.forEach(function(record) {
-        const row = tableBody.insertRow();
-        row.insertCell().textContent = record.fio_sotr || ''; // Состав МКБ
-        row.insertCell().textContent = record.uchastie_v_mkb || ''; // Участие в МКБ
-        row.insertCell().textContent = record.cel || ''; // Цель
-        row.insertCell().textContent = record.domen_i_ocenka_po_mkf || ''; // Домен и оценка по МКФ
-        row.insertCell().textContent = record.zadachi || ''; // Задачи
-        row.insertCell().textContent = record.metodika || ''; // Методика
-        row.insertCell().textContent = record.fio_sotr || ''; // Исполнитель (ФИО)
-        row.insertCell().textContent = record.ocenka_po_mkf_do_kursa || ''; // Оценка по МКФ до курса
-        row.insertCell().textContent = record.ocenka_po_mkf_posle_kursa || ''; // Оценка по МКФ после курса
-      });
+        // Добавляем отфильтрованные записи в таблицу
+        filteredRecords.forEach(function(record) {
+          const row = tableBody.insertRow();
+          row.insertCell().textContent = record.fio_sotr || ''; // Состав МКБ
+          row.insertCell().textContent = record.uchastie_v_mkb || ''; // Участие в МКБ
+          row.insertCell().textContent = record.cel || ''; // Цель
+          row.insertCell().textContent = record.domen_i_ocenka_po_mkf || ''; // Домен и оценка по МКФ
+          row.insertCell().textContent = record.zadachi || ''; // Задачи
+          row.insertCell().textContent = record.metodika || ''; // Методика
+          row.insertCell().textContent = record.fio_sotr || ''; // Исполнитель (ФИО)
+          row.insertCell().textContent = record.ocenka_po_mkf_do_kursa || ''; // Оценка по МКФ до курса
+          row.insertCell().textContent = record.ocenka_po_mkf_posle_kursa || ''; // Оценка по МКФ после курса
+        });
+      } catch (error) {
+        console.error("Ошибка при фильтрации записей:", error); // Отладка
+      }
     }
     </script>
 </body>
