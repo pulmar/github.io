@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Протокол работы мультидисциплинарной бригады</title>
     
-    <!-- A template for showing an invoice in a Custom Widget in Grist. -->
-    <!-- Uses Vue.js, moment, and the Grist Plugin API -->
+    <!-- Подключение необходимых библиотек -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.3/vue.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
     <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
@@ -49,35 +48,42 @@
     <p><strong>Врач ФРМ (ФИО):</strong> <span id="vrach_frm"></span> <span style="float: right;">Подпись _______________</span></p>
 
     <script>
+    // Указываем, какие колонки нужны для работы виджета
     grist.ready({
       requiredAccess: 'read table',
-      columns: ['fio', 'vozrast', 'diagnoz', 'data_zasedaniya', 'reabilitacionnyi_diagnoz', 'vrach_frm', 'fio_sotr', 'uchastie_v_mkb', 'cel', 'domen_i_ocenka_po_mkf', 'zadachi', 'metodika', 'ocenka_po_mkf_do_kursa', 'ocenka_po_mkf_posle_kursa']
+      columns: [
+        'fio', 'vozrast', 'diagnoz', 'data_zasedaniya', 'reabilitacionnyi_diagnoz', 'vrach_frm',
+        'fio_sotr', 'uchastie_v_mkb', 'cel', 'domen_i_ocenka_po_mkf', 'zadachi', 'metodika',
+        'ocenka_po_mkf_do_kursa', 'ocenka_po_mkf_posle_kursa'
+      ]
     });
 
+    // Обработка одной записи (если виджет настроен на одну запись)
     grist.onRecord(function(record) {
-      document.getElementById('fio').textContent = record.fio;
-      document.getElementById('vozrast').textContent = record.vozrast;
-      document.getElementById('diagnoz').textContent = record.diagnoz;
-      document.getElementById('data_zasedaniya').textContent = record.data_zasedaniya;
-      document.getElementById('reabilitacionnyi_diagnoz').textContent = record.reabilitacionnyi_diagnoz;
-      document.getElementById('vrach_frm').textContent = record.vrach_frm;
+      document.getElementById('fio').textContent = record.fio || '';
+      document.getElementById('vozrast').textContent = record.vozrast || '';
+      document.getElementById('diagnoz').textContent = record.diagnoz || '';
+      document.getElementById('data_zasedaniya').textContent = record.data_zasedaniya || '';
+      document.getElementById('reabilitacionnyi_diagnoz').textContent = record.reabilitacionnyi_diagnoz || '';
+      document.getElementById('vrach_frm').textContent = record.vrach_frm || '';
     });
 
+    // Обработка нескольких записей (если виджет настроен на таблицу)
     grist.onRecords(function(records) {
       var tableBody = document.querySelector('#doctorsTable tbody');
       tableBody.innerHTML = ''; // Очищаем таблицу перед добавлением новых данных
+
       records.forEach(function(record) {
         var row = tableBody.insertRow();
-        row.insertCell().textContent = record.fio;
-        row.insertCell().textContent = record.fio_sotr;
-        row.insertCell().textContent = record.uchastie_v_mkb;
-        row.insertCell().textContent = record.cel;
-        row.insertCell().textContent = record.domen_i_ocenka_po_mkf;
-        row.insertCell().textContent = record.zadachi;
-        row.insertCell().textContent = record.metodika;
-        row.insertCell().textContent = record.fio_sotr;
-        row.insertCell().textContent = record.ocenka_po_mkf_do_kursa;
-        row.insertCell().textContent = record.ocenka_po_mkf_posle_kursa;
+        row.insertCell().textContent = record.fio_sotr || '';
+        row.insertCell().textContent = record.uchastie_v_mkb || '';
+        row.insertCell().textContent = record.cel || '';
+        row.insertCell().textContent = record.domen_i_ocenka_po_mkf || '';
+        row.insertCell().textContent = record.zadachi || '';
+        row.insertCell().textContent = record.metodika || '';
+        row.insertCell().textContent = record.fio_sotr || '';
+        row.insertCell().textContent = record.ocenka_po_mkf_do_kursa || '';
+        row.insertCell().textContent = record.ocenka_po_mkf_posle_kursa || '';
       });
     });
     </script>
