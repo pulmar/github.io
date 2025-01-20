@@ -268,29 +268,31 @@
           participantRow.insertCell().textContent = rowNumber++;
           participantRow.insertCell().textContent = participant.name || '';
           participantRow.insertCell().textContent = participant.uchastie || '';
-          participantRow.insertCell().textContent = '';
-          participantRow.insertCell().textContent = '';
-          participantRow.insertCell().textContent = '';
-          participantRow.insertCell().textContent = '';
-          participantRow.insertCell().textContent = '';
-          participantRow.insertCell().textContent = '';
+          participantRow.insertCell().textContent = ''; // Цель (пусто, так как это подстрока)
+          participantRow.insertCell().textContent = ''; // МКФ (пусто, так как это подстрока)
+          participantRow.insertCell().textContent = ''; // Задачи (пусто, так как это подстрока)
+          participantRow.insertCell().textContent = ''; // Методика (пусто, так как это подстрока)
+          participantRow.insertCell().textContent = ''; // Оценка до курса (пусто, так как это подстрока)
+          participantRow.insertCell().textContent = ''; // Оценка после курса (пусто, так как это подстрока)
 
           // Добавляем строки с целями, задачами и методиками
           participant.goals.forEach(goal => {
             const goalRow = tableBody.insertRow();
             goalRow.classList.add('goal-row');
+            goalRow.insertCell().textContent = ''; // № (пусто, так как это подстрока)
             goalRow.insertCell().textContent = ''; // Участник (пусто, так как это подстрока)
             goalRow.insertCell().textContent = ''; // Участие (пусто, так как это подстрока)
             goalRow.insertCell().textContent = goal.target || ''; // Цель
-            goalRow.insertCell().textContent = '';
-            goalRow.insertCell().textContent = '';
-            goalRow.insertCell().textContent = '';
-            goalRow.insertCell().textContent = '';
-            goalRow.insertCell().textContent = '';
+            goalRow.insertCell().textContent = ''; // МКФ (пусто, так как это подстрока)
+            goalRow.insertCell().textContent = ''; // Задачи (пусто, так как это подстрока)
+            goalRow.insertCell().textContent = ''; // Методика (пусто, так как это подстрока)
+            goalRow.insertCell().textContent = ''; // Оценка до курса (пусто, так как это подстрока)
+            goalRow.insertCell().textContent = ''; // Оценка после курса (пусто, так как это подстрока)
 
             goal.tasks.forEach(task => {
               const taskRow = tableBody.insertRow();
               taskRow.classList.add('task-row');
+              taskRow.insertCell().textContent = ''; // № (пусто, так как это подстрока)
               taskRow.insertCell().textContent = ''; // Участник (пусто, так как это подстрока)
               taskRow.insertCell().textContent = ''; // Участие (пусто, так как это подстрока)
               taskRow.insertCell().textContent = ''; // Цель (пусто, так как это подстрока)
