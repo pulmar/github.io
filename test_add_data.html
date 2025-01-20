@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Добавить пациента</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .form-container {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .form-container input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .form-container button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .form-container button:hover {
+      background-color: #45a049;
+    }
+    .message {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 4px;
+      display: none;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Добавить пациента</h2>
+    <input type="text" id="patientName" placeholder="Введите имя пациента">
+    <button id="submitButton">Добавить</button>
+    <div id="message" class="message"></div>
+  </div>
+
+  <script>
+    // Функция для отправки данных в GetGrist
+    async function addPatient() {
+      const patientName = document.getElementById('patientName').value;
+
+      if (!patientName) {
+        showMessage('Пожалуйста, введите имя пациента.', 'error');
+        return;
+      }
+
+      const docId = 'YOUR_DOC_ID'; // Замените на ID вашего документа
+      const tableId = 'test'; // Название таблицы
+      const apiKey = 'YOUR_API_KEY'; // Замените на ваш API-ключ
+
+      const url = `https://docs.getgrist.com/api/docs/${docId}/tables/${tableId}/records`;
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            records: [
+              {
+                fields: {
+                  patient_test: patientName
+                }
+              }
+            ]
+          })
+        });
+
+        if (response.ok) {
+          showMessage('Пациент успешно добавлен!', 'success');
+          document.getElementById('patientName').value = ''; // Очистка поля ввода
+        } else {
+          const errorData = await response.json();
+          showMessage(`Ошибка: ${errorData.error || 'Неизвестная ошибка'}`, 'error');
+        }
+      } catch (error) {
+        showMessage(`Ошибка: ${error.message}`, 'error');
+      }
+    }
+
+    // Функция для отображения сообщений
+    function showMessage(message, type) {
+      const messageDiv = document.getElementById('message');
+      messageDiv.textContent = message;
+      messageDiv.className = `message ${type}`;
+      messageDiv.style.display = 'block';
+
+      // Скрыть сообщение через 3 секунды
+      setTimeout(() => {
+        messageDiv.style.display = 'none';
+      }, 3000);
+    }
+
+    // Назначение обработчика события на кнопку
+    document.getElementById('submitButton').addEventListener('click', addPatient);
+  </script>
+</body>
+</html>
