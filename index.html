@@ -58,35 +58,23 @@
       ]
     });
 
-    // Обработка выбранной записи
+    // Обработка одной записи (если виджет настроен на одну запись)
     grist.onRecord(function(record) {
-      // Обновляем информацию о пациенте
       document.getElementById('fio').textContent = record.fio || '';
       document.getElementById('vozrast').textContent = record.vozrast || '';
       document.getElementById('diagnoz').textContent = record.diagnoz || '';
       document.getElementById('data_zasedaniya').textContent = record.data_zasedaniya || '';
       document.getElementById('reabilitacionnyi_diagnoz').textContent = record.reabilitacionnyi_diagnoz || '';
       document.getElementById('vrach_frm').textContent = record.vrach_frm || '';
-
-      // Фильтруем записи по выбранному fio
-      filterRecordsByFio(record.fio);
     });
 
-    // Функция для фильтрации записей по fio
-    async function filterRecordsByFio(fio) {
-      // Получаем все записи из таблицы
-      const allRecords = await grist.getAllRecords();
+    // Обработка нескольких записей (если виджет настроен на таблицу)
+    grist.onRecords(function(records) {
+      var tableBody = document.querySelector('#doctorsTable tbody');
+      tableBody.innerHTML = ''; // Очищаем таблицу перед добавлением новых данных
 
-      // Фильтруем записи по выбранному fio
-      const filteredRecords = allRecords.filter(record => record.fio === fio);
-
-      // Очищаем таблицу перед добавлением новых данных
-      const tableBody = document.querySelector('#doctorsTable tbody');
-      tableBody.innerHTML = '';
-
-      // Добавляем отфильтрованные записи в таблицу
-      filteredRecords.forEach(function(record) {
-        const row = tableBody.insertRow();
+      records.forEach(function(record) {
+        var row = tableBody.insertRow();
         row.insertCell().textContent = record.fio_sotr || '';
         row.insertCell().textContent = record.uchastie_v_mkb || '';
         row.insertCell().textContent = record.cel || '';
@@ -97,7 +85,7 @@
         row.insertCell().textContent = record.ocenka_po_mkf_do_kursa || '';
         row.insertCell().textContent = record.ocenka_po_mkf_posle_kursa || '';
       });
-    }
+    });
     </script>
 </body>
 </html>
