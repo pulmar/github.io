@@ -68,6 +68,7 @@
       tableBody.innerHTML = ''; // Очищаем таблицу перед добавлением новых данных
       records.forEach(function(record) {
         var row = tableBody.insertRow();
+        row.insertCell().textContent = record.fio;
         row.insertCell().textContent = record.fio_sotr;
         row.insertCell().textContent = record.uchastie_v_mkb;
         row.insertCell().textContent = record.cel;
