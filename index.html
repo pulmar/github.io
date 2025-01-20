@@ -68,8 +68,20 @@
             font-weight: bold;
         }
 
-        tr:hover {
-            background-color: #f1f1f1;
+        /* Стили для выделения иерархии */
+        .participant-row {
+            background-color: #f1f1f1; /* Светлый фон для строки участника */
+            border-top: 2px solid #2c3e50; /* Толстая линия сверху */
+        }
+
+        .goal-row {
+            background-color: #f9f9f9; /* Еще более светлый фон для строки цели */
+            border-left: 2px solid #2c3e50; /* Вертикальная линия слева */
+        }
+
+        .task-row {
+            padding-left: 30px; /* Отступ для задач */
+            border-left: 2px solid #2c3e50; /* Вертикальная линия слева */
         }
 
         /* Стили для подписи врача */
@@ -132,6 +144,21 @@
             th {
                 background-color: #f1f1f1; /* Убираем темный фон для печати */
                 color: #000000; /* Черный текст для печати */
+            }
+
+            .participant-row {
+                background-color: #f1f1f1; /* Сохраняем фон для печати */
+                border-top: 2px solid #000000; /* Черная линия сверху */
+            }
+
+            .goal-row {
+                background-color: #f9f9f9; /* Сохраняем фон для печати */
+                border-left: 2px solid #000000; /* Черная вертикальная линия */
+            }
+
+            .task-row {
+                padding-left: 30px; /* Сохраняем отступ для печати */
+                border-left: 2px solid #000000; /* Черная вертикальная линия */
             }
         }
     </style>
@@ -221,9 +248,10 @@
         groupedData.forEach(participant => {
           // Добавляем строку с участником
           const participantRow = tableBody.insertRow();
+          participantRow.classList.add('participant-row');
           participantRow.insertCell().textContent = participant.name || '';
           participantRow.insertCell().textContent = participant.uchastie || '';
-          participantRow.insertCell().textContent = participant.target || '';
+          participantRow.insertCell().textContent = '';
           participantRow.insertCell().textContent = '';
           participantRow.insertCell().textContent = '';
           participantRow.insertCell().textContent = '';
@@ -232,11 +260,23 @@
 
           // Добавляем строки с целями, задачами и методиками
           participant.goals.forEach(goal => {
-            goal.tasks.forEach((task, index) => {
+            const goalRow = tableBody.insertRow();
+            goalRow.classList.add('goal-row');
+            goalRow.insertCell().textContent = ''; // Участник (пусто, так как это подстрока)
+            goalRow.insertCell().textContent = ''; // Участие (пусто, так как это подстрока)
+            goalRow.insertCell().textContent = goal.target || ''; // Цель
+            goalRow.insertCell().textContent = '';
+            goalRow.insertCell().textContent = '';
+            goalRow.insertCell().textContent = '';
+            goalRow.insertCell().textContent = '';
+            goalRow.insertCell().textContent = '';
+
+            goal.tasks.forEach(task => {
               const taskRow = tableBody.insertRow();
+              taskRow.classList.add('task-row');
               taskRow.insertCell().textContent = ''; // Участник (пусто, так как это подстрока)
               taskRow.insertCell().textContent = ''; // Участие (пусто, так как это подстрока)
-              taskRow.insertCell().textContent = index === 0 ? goal.target : ''; // Цель (только для первой строки)
+              taskRow.insertCell().textContent = ''; // Цель (пусто, так как это подстрока)
               taskRow.insertCell().textContent = task.Domen_C || ''; // МКФ
               taskRow.insertCell().textContent = task.zadachi || ''; // Задачи
               taskRow.insertCell().textContent = task.metodika || ''; // Методика
