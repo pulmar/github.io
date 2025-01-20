@@ -11,21 +11,117 @@
     <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
     
     <style>
-        body { font-family: Arial, sans-serif; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid black; padding: 5px; text-align: left; }
-        h1 { text-align: center; }
+        /* Общие стили для страницы */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        /* Стили для полей с информацией о пациенте */
+        .patient-info {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .patient-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .patient-info strong {
+            color: #2c3e50;
+        }
+
+        /* Стили для таблицы */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Стили для подписи врача */
+        .doctor-signature {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .doctor-signature p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .doctor-signature strong {
+            color: #2c3e50;
+        }
+
+        /* Стили для кнопки печати (опционально) */
+        .print-button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #2c3e50;
+            color: #ffffff;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .print-button:hover {
+            background-color: #34495e;
+        }
     </style>
 </head>
 <body>
     <h1>Протокол работы мультидисциплинарной бригады отделения реабилитации для детей РДКБ</h1>
     
-    <p><strong>Пациент ФИО:</strong> <span id="patient_FIO"></span></p>
-    <p><strong>Возраст:</strong> <span id="patient_age"></span></p>
-    <p><strong>Диагноз:</strong> <span id="diagnoz"></span></p>
-    <p><strong>Дата заседания:</strong> <span id="date_mdb"></span></p>
-    <p><strong>Реабилитационный диагноз:</strong> <span id="reabilitacionnyi_diagnoz"></span></p>
+    <!-- Блок с информацией о пациенте -->
+    <div class="patient-info">
+        <p><strong>Пациент ФИО:</strong> <span id="patient_FIO"></span></p>
+        <p><strong>Возраст:</strong> <span id="patient_age"></span></p>
+        <p><strong>Диагноз:</strong> <span id="diagnoz"></span></p>
+        <p><strong>Дата заседания:</strong> <span id="date_mdb"></span></p>
+        <p><strong>Реабилитационный диагноз:</strong> <span id="reabilitacionnyi_diagnoz"></span></p>
+    </div>
 
+    <!-- Таблица с данными -->
     <table id="doctorsTable">
         <thead>
             <tr>
@@ -45,7 +141,14 @@
         </tbody>
     </table>
 
-    <p><strong>Врач ФРМ (ФИО):</strong> <span id="FIO_user"></span> <span style="float: right;">Подпись _______________</span></p>
+    <!-- Блок с подписью врача -->
+    <div class="doctor-signature">
+        <p><strong>Врач ФРМ (ФИО):</strong> <span id="FIO_user"></span></p>
+        <p style="float: right;">Подпись _______________</p>
+    </div>
+
+    <!-- Кнопка печати (опционально) -->
+    <div class="print-button" onclick="window.print()">Печать</div>
 
     <script>
     // Указываем, какие колонки нужны для работы виджета
@@ -81,54 +184,29 @@
         const tableData = await grist.fetchSelectedTable();
         console.log("Данные таблицы:", tableData); // Отладка
 
-        // Преобразуем данные в массив объектов
-        const allRecords = transformTableDataToRecords(tableData);
-        console.log("Все записи:", allRecords); // Отладка
-
-        // Фильтруем записи по выбранному patient_FIO
-        const filteredRecords = allRecords.filter(record => {
-          console.log("Сравниваем:", record.patient_FIO, "с", patient_FIO); // Отладка
-          return record.patient_FIO === patient_FIO;
-        });
-        console.log("Отфильтрованные записи:", filteredRecords); // Отладка
-
         // Очищаем таблицу перед добавлением новых данных
         const tableBody = document.querySelector('#doctorsTable tbody');
         tableBody.innerHTML = '';
 
-        // Добавляем отфильтрованные записи в таблицу
-        filteredRecords.forEach(function(record) {
-          const row = tableBody.insertRow();
-          row.insertCell().textContent = record.FIO_user || ''; // Состав МКБ
-          row.insertCell().textContent = record.uchastie || ''; // Участие в МКБ
-          row.insertCell().textContent = record.target || ''; // Цель
-          row.insertCell().textContent = record.Domen_C || ''; // Домен и оценка по МКФ
-          row.insertCell().textContent = record.zadachi || ''; // Задачи
-          row.insertCell().textContent = record.metodika || ''; // Методика
-          row.insertCell().textContent = record.FIO_user || ''; // Исполнитель (ФИО)
-          row.insertCell().textContent = record.ocenka_do_kursa || ''; // Оценка по МКФ до курса
-          row.insertCell().textContent = record.ocenka_posle || ''; // Оценка по МКФ после курса
-        });
+        // Проходим по данным и добавляем строки в таблицу
+        const rowCount = tableData.patient_FIO.length; // Количество строк
+        for (let i = 0; i < rowCount; i++) {
+          if (tableData.patient_FIO[i] === patient_FIO) {
+            const row = tableBody.insertRow();
+            row.insertCell().textContent = tableData.FIO_user[i] || ''; // Состав МКБ
+            row.insertCell().textContent = tableData.uchastie[i] || ''; // Участие в МКБ
+            row.insertCell().textContent = tableData.target[i] || ''; // Цель
+            row.insertCell().textContent = tableData.Domen_C[i] || ''; // Домен и оценка по МКФ
+            row.insertCell().textContent = tableData.zadachi[i] || ''; // Задачи
+            row.insertCell().textContent = tableData.metodika[i] || ''; // Методика
+            row.insertCell().textContent = tableData.FIO_user[i] || ''; // Исполнитель (ФИО)
+            row.insertCell().textContent = tableData.ocenka_do_kursa[i] || ''; // Оценка по МКФ до курса
+            row.insertCell().textContent = tableData.ocenka_posle[i] || ''; // Оценка по МКФ после курса
+          }
+        }
       } catch (error) {
         console.error("Ошибка при фильтрации записей:", error); // Отладка
       }
-    }
-
-    // Функция для преобразования данных таблицы в массив объектов
-    function transformTableDataToRecords(tableData) {
-      const records = [];
-      const columns = Object.keys(tableData);
-      const rowCount = tableData[columns[0]].length;
-
-      for (let i = 0; i < rowCount; i++) {
-        const record = {};
-        columns.forEach(column => {
-          record[column] = tableData[column][i];
-        });
-        records.push(record);
-      }
-
-      return records;
     }
     </script>
 </body>
