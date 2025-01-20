@@ -184,8 +184,7 @@
         <p><strong>Возраст:</strong> <span id="patient_age"></span></p>
         <p><strong>Диагноз:</strong> <span id="diagnoz"></span></p>
         <p><strong>Дата заседания:</strong> <span id="date_mdb"></span></p>
-        <p><strong>Реабилитационный диагноз:</strong> <span id="reabilitacionnyi_diagnoz"></span></p>
-        <p><strong>Реабилитационный диагноз:</strong> <span id="mkf_values"></span></p> <!-- Новый элемент для МКФ -->
+        <p><strong>Значения МКФ:</strong> <span id="mkf_values"></span></p> <!-- Новый элемент для МКФ -->
     </div>
 
     <!-- Таблица с данными -->
@@ -210,7 +209,7 @@
 
     <!-- Блок с подписью врача -->
     <div class="doctor-signature">
-        <p><strong>Врач ФРМ (ФИО):</strong> <span id="FIO_user"></span></p>
+        <p><strong>Заведующий отделением:</strong> Ковальчук Т.С.</p>
         <p style="float: right;">Подпись _______________</p>
     </div>
 
@@ -239,8 +238,7 @@
       document.getElementById('patient_age').textContent = record.patient_age || '';
       document.getElementById('diagnoz').textContent = record.diagnoz || '';
       document.getElementById('date_mdb').textContent = record.date_mdb || '';
-      document.getElementById('reabilitacionnyi_diagnoz').textContent = record.reabilitacionnyi_diagnoz || '';
-      document.getElementById('FIO_user').textContent = record.FIO_user || '';
+      document.getElementById('mkf_values').textContent = record.reabilitacionnyi_diagnoz || '';
 
       // Фильтруем записи по выбранному patient_FIO
       filterRecordsByFio(record.patient_FIO);
