@@ -20,7 +20,7 @@
 <body>
     <h1>Протокол работы мультидисциплинарной бригады отделения реабилитации для детей РДКБ</h1>
     
-    <p><strong>Пациент ФИО:</strong> <span id="patient_FIO"></span></p>
+    <p><strong>Пациент ФИО:</strong> <span id="fio"></span></p>
     <p><strong>Возраст:</strong> <span id="vozrast"></span></p>
     <p><strong>Диагноз:</strong> <span id="diagnoz"></span></p>
     <p><strong>Дата заседания:</strong> <span id="data_zasedaniya"></span></p>
@@ -52,40 +52,52 @@
     grist.ready({
       requiredAccess: 'read table',
       columns: [
-        'patient_FIO', 'vozrast', 'diagnoz', 'data_zasedaniya', 'reabilitacionnyi_diagnoz', 'vrach_frm',
+        'fio', 'vozrast', 'diagnoz', 'data_zasedaniya', 'reabilitacionnyi_diagnoz', 'vrach_frm',
         'fio_sotr', 'uchastie_v_mkb', 'cel', 'domen_i_ocenka_po_mkf', 'zadachi', 'metodika',
         'ocenka_po_mkf_do_kursa', 'ocenka_po_mkf_posle_kursa'
       ]
     });
 
-    // Обработка одной записи (если виджет настроен на одну запись)
+    // Обработка выбранной записи
     grist.onRecord(function(record) {
-      document.getElementById('patient_FIO').textContent = record.patient_FIO || '';
+      // Обновляем информацию о пациенте
+      document.getElementById('fio').textContent = record.fio || '';
       document.getElementById('vozrast').textContent = record.vozrast || '';
       document.getElementById('diagnoz').textContent = record.diagnoz || '';
       document.getElementById('data_zasedaniya').textContent = record.data_zasedaniya || '';
       document.getElementById('reabilitacionnyi_diagnoz').textContent = record.reabilitacionnyi_diagnoz || '';
       document.getElementById('vrach_frm').textContent = record.vrach_frm || '';
+
+      // Фильтруем записи по выбранному fio
+      filterRecordsByFio(record.fio);
     });
 
-    // Обработка нескольких записей (если виджет настроен на таблицу)
-    grist.onRecords(function(records) {
-      var tableBody = document.querySelector('#doctorsTable tbody');
-      tableBody.innerHTML = ''; // Очищаем таблицу перед добавлением новых данных
+    // Функция для фильтрации записей по fio
+    async function filterRecordsByFio(fio) {
+      // Получаем все записи из таблицы
+      const allRecords = await grist.getAllRecords();
 
-      records.forEach(function(record) {
-        var row = tableBody.insertRow();
-        row.insertCell().textContent = record.fio_sotr || '';
-        row.insertCell().textContent = record.uchastie_v_mkb || '';
-        row.insertCell().textContent = record.cel || '';
-        row.insertCell().textContent = record.domen_i_ocenka_po_mkf || '';
-        row.insertCell().textContent = record.zadachi || '';
-        row.insertCell().textContent = record.metodika || '';
-        row.insertCell().textContent = record.fio_sotr || '';
-        row.insertCell().textContent = record.ocenka_po_mkf_do_kursa || '';
-        row.insertCell().textContent = record.ocenka_po_mkf_posle_kursa || '';
+      // Фильтруем записи по выбранному fio
+      const filteredRecords = allRecords.filter(record => record.fio === fio);
+
+      // Очищаем таблицу перед добавлением новых данных
+      const tableBody = document.querySelector('#doctorsTable tbody');
+      tableBody.innerHTML = '';
+
+      // Добавляем отфильтрованные записи в таблицу
+      filteredRecords.forEach(function(record) {
+        const row = tableBody.insertRow();
+        row.insertCell().textContent = record.fio_sotr || ''; // Состав МКБ
+        row.insertCell().textContent = record.uchastie_v_mkb || ''; // Участие в МКБ
+        row.insertCell().textContent = record.cel || ''; // Цель
+        row.insertCell().textContent = record.domen_i_ocenka_po_mkf || ''; // Домен и оценка по МКФ
+        row.insertCell().textContent = record.zadachi || ''; // Задачи
+        row.insertCell().textContent = record.metodika || ''; // Методика
+        row.insertCell().textContent = record.fio_sotr || ''; // Исполнитель (ФИО)
+        row.insertCell().textContent = record.ocenka_po_mkf_do_kursa || ''; // Оценка по МКФ до курса
+        row.insertCell().textContent = record.ocenka_po_mkf_posle_kursa || ''; // Оценка по МКФ после курса
       });
-    });
+    }
     </script>
 </body>
 </html>
