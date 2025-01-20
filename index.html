@@ -21,9 +21,9 @@
     <h1>Протокол работы мультидисциплинарной бригады отделения реабилитации для детей РДКБ</h1>
     
     <p><strong>Пациент ФИО:</strong> <span id="patient_FIO"></span></p>
-    <p><strong>Возраст:</strong> <span id="vozrast"></span></p>
+    <p><strong>Возраст:</strong> <span id="patient_age"></span></p>
     <p><strong>Диагноз:</strong> <span id="diagnoz"></span></p>
-    <p><strong>Дата заседания:</strong> <span id="data_zasedaniya"></span></p>
+    <p><strong>Дата заседания:</strong> <span id="date_mdb"></span></p>
     <p><strong>Реабилитационный диагноз:</strong> <span id="reabilitacionnyi_diagnoz"></span></p>
 
     <table id="doctorsTable">
@@ -45,16 +45,16 @@
         </tbody>
     </table>
 
-    <p><strong>Врач ФРМ (ФИО):</strong> <span id="vrach_frm"></span> <span style="float: right;">Подпись _______________</span></p>
+    <p><strong>Врач ФРМ (ФИО):</strong> <span id="FIO_user"></span> <span style="float: right;">Подпись _______________</span></p>
 
     <script>
     // Указываем, какие колонки нужны для работы виджета
     grist.ready({
       requiredAccess: 'read table',
       columns: [
-        'patient_FIO', 'vozrast', 'diagnoz', 'data_zasedaniya', 'reabilitacionnyi_diagnoz', 'vrach_frm',
-        'fio_sotr', 'uchastie_v_mkb', 'cel', 'domen_i_ocenka_po_mkf', 'zadachi', 'metodika',
-        'ocenka_po_mkf_do_kursa', 'ocenka_po_mkf_posle_kursa'
+        'patient_FIO', 'patient_age', 'diagnoz', 'date_mdb', 'reabilitacionnyi_diagnoz', 'FIO_user',
+        'FIO_user', 'uchastie', 'target', 'Domen_C', 'zadachi', 'metodika',
+        'ocenka_do_kursa', 'ocenka_posle'
       ]
     });
 
@@ -64,25 +64,28 @@
 
       // Обновляем информацию о пациенте
       document.getElementById('patient_FIO').textContent = record.patient_FIO || '';
-      document.getElementById('vozrast').textContent = record.vozrast || '';
+      document.getElementById('patient_age').textContent = record.patient_age || '';
       document.getElementById('diagnoz').textContent = record.diagnoz || '';
-      document.getElementById('data_zasedaniya').textContent = record.data_zasedaniya || '';
+      document.getElementById('date_mdb').textContent = record.date_mdb || '';
       document.getElementById('reabilitacionnyi_diagnoz').textContent = record.reabilitacionnyi_diagnoz || '';
-      document.getElementById('vrach_frm').textContent = record.vrach_frm || '';
+      document.getElementById('FIO_user').textContent = record.FIO_user || '';
 
-      // Фильтруем записи по выбранному fio
+      // Фильтруем записи по выбранному patient_FIO
       filterRecordsByFio(record.patient_FIO);
     });
 
-    // Функция для фильтрации записей по fio
-    async function filterRecordsByFio(fio) {
+    // Функция для фильтрации записей по patient_FIO
+    async function filterRecordsByFio(patient_FIO) {
       try {
         // Получаем все записи из таблицы
         const allRecords = await grist.getAllRecords();
         console.log("Все записи:", allRecords); // Отладка
 
-        // Фильтруем записи по выбранному fio
-        const filteredRecords = allRecords.filter(record => record.patient_FIO === patient_FIO);
+        // Фильтруем записи по выбранному patient_FIO
+        const filteredRecords = allRecords.filter(record => {
+          console.log("Сравниваем:", record.patient_FIO, "с", patient_FIO); // Отладка
+          return record.patient_FIO === patient_FIO;
+        });
         console.log("Отфильтрованные записи:", filteredRecords); // Отладка
 
         // Очищаем таблицу перед добавлением новых данных
@@ -92,15 +95,15 @@
         // Добавляем отфильтрованные записи в таблицу
         filteredRecords.forEach(function(record) {
           const row = tableBody.insertRow();
-          row.insertCell().textContent = record.fio_sotr || ''; // Состав МКБ
-          row.insertCell().textContent = record.uchastie_v_mkb || ''; // Участие в МКБ
-          row.insertCell().textContent = record.cel || ''; // Цель
-          row.insertCell().textContent = record.domen_i_ocenka_po_mkf || ''; // Домен и оценка по МКФ
+          row.insertCell().textContent = record.FIO_user || ''; // Состав МКБ
+          row.insertCell().textContent = record.uchastie || ''; // Участие в МКБ
+          row.insertCell().textContent = record.target || ''; // Цель
+          row.insertCell().textContent = record.Domen_C || ''; // Домен и оценка по МКФ
           row.insertCell().textContent = record.zadachi || ''; // Задачи
           row.insertCell().textContent = record.metodika || ''; // Методика
-          row.insertCell().textContent = record.fio_sotr || ''; // Исполнитель (ФИО)
-          row.insertCell().textContent = record.ocenka_po_mkf_do_kursa || ''; // Оценка по МКФ до курса
-          row.insertCell().textContent = record.ocenka_po_mkf_posle_kursa || ''; // Оценка по МКФ после курса
+          row.insertCell().textContent = record.FIO_user || ''; // Исполнитель (ФИО)
+          row.insertCell().textContent = record.ocenka_do_kursa || ''; // Оценка по МКФ до курса
+          row.insertCell().textContent = record.ocenka_posle || ''; // Оценка по МКФ после курса
         });
       } catch (error) {
         console.error("Ошибка при фильтрации записей:", error); // Отладка
