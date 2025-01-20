@@ -78,7 +78,11 @@
     async function filterRecordsByFio(patient_FIO) {
       try {
         // Получаем все записи из таблицы
-        const allRecords = await grist.fetchSelectedTable();
+        const tableData = await grist.fetchSelectedTable();
+        console.log("Данные таблицы:", tableData); // Отладка
+
+        // Преобразуем данные в массив объектов
+        const allRecords = transformTableDataToRecords(tableData);
         console.log("Все записи:", allRecords); // Отладка
 
         // Фильтруем записи по выбранному patient_FIO
@@ -108,6 +112,23 @@
       } catch (error) {
         console.error("Ошибка при фильтрации записей:", error); // Отладка
       }
+    }
+
+    // Функция для преобразования данных таблицы в массив объектов
+    function transformTableDataToRecords(tableData) {
+      const records = [];
+      const columns = Object.keys(tableData);
+      const rowCount = tableData[columns[0]].length;
+
+      for (let i = 0; i < rowCount; i++) {
+        const record = {};
+        columns.forEach(column => {
+          record[column] = tableData[column][i];
+        });
+        records.push(record);
+      }
+
+      return records;
     }
     </script>
 </body>
