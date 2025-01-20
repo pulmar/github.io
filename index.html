@@ -20,7 +20,7 @@
 <body>
     <h1>Протокол работы мультидисциплинарной бригады отделения реабилитации для детей РДКБ</h1>
     
-    <p><strong>Пациент ФИО:</strong> <span id="fio"></span></p>
+    <p><strong>Пациент ФИО:</strong> <span id="patient_FIO"></span></p>
     <p><strong>Возраст:</strong> <span id="vozrast"></span></p>
     <p><strong>Диагноз:</strong> <span id="diagnoz"></span></p>
     <p><strong>Дата заседания:</strong> <span id="data_zasedaniya"></span></p>
@@ -63,7 +63,7 @@
       console.log("Выбранная запись:", record); // Отладка
 
       // Обновляем информацию о пациенте
-      document.getElementById('fio').textContent = record.fio || '';
+      document.getElementById('patient_FIO').textContent = record.patient_FIO || '';
       document.getElementById('vozrast').textContent = record.vozrast || '';
       document.getElementById('diagnoz').textContent = record.diagnoz || '';
       document.getElementById('data_zasedaniya').textContent = record.data_zasedaniya || '';
@@ -71,7 +71,7 @@
       document.getElementById('vrach_frm').textContent = record.vrach_frm || '';
 
       // Фильтруем записи по выбранному fio
-      filterRecordsByFio(record.fio);
+      filterRecordsByFio(record.patient_FIO);
     });
 
     // Функция для фильтрации записей по fio
@@ -82,7 +82,7 @@
         console.log("Все записи:", allRecords); // Отладка
 
         // Фильтруем записи по выбранному fio
-        const filteredRecords = allRecords.filter(record => record.fio === fio);
+        const filteredRecords = allRecords.filter(record => record.patient_FIO === patient_FIO);
         console.log("Отфильтрованные записи:", filteredRecords); // Отладка
 
         // Очищаем таблицу перед добавлением новых данных
