@@ -107,6 +107,33 @@
         .print-button:hover {
             background-color: #34495e;
         }
+
+        /* Стили для печати */
+        @media print {
+            .print-button {
+                display: none; /* Скрываем кнопку при печати */
+            }
+
+            body {
+                background-color: #ffffff; /* Убираем фон для печати */
+                color: #000000; /* Черный текст для печати */
+            }
+
+            .patient-info, .doctor-signature {
+                box-shadow: none; /* Убираем тени для печати */
+                border: 1px solid #ddd; /* Добавляем рамку для печати */
+            }
+
+            table {
+                box-shadow: none; /* Убираем тени для печати */
+                border: 1px solid #ddd; /* Добавляем рамку для печати */
+            }
+
+            th {
+                background-color: #f1f1f1; /* Убираем темный фон для печати */
+                color: #000000; /* Черный текст для печати */
+            }
+        }
     </style>
 </head>
 <body>
@@ -125,15 +152,14 @@
     <table id="doctorsTable">
         <thead>
             <tr>
-                <th>Состав МКБ</th>
-                <th>Участие в МКБ</th>
+                <th>Участник МДРК</th>
+                <th>Участие</th>
                 <th>Цель</th>
-                <th>Домен и оценка по МКФ</th>
+                <th>МКФ</th>
                 <th>Задачи</th>
                 <th>Методика</th>
-                <th>Исполнитель (ФИО)</th>
-                <th>Оценка по МКФ до курса</th>
-                <th>Оценка по МКФ после курса</th>
+                <th>Оценка функции до курса</th>
+                <th>Оценка функции после курса</th>
             </tr>
         </thead>
         <tbody>
@@ -188,25 +214,90 @@
         const tableBody = document.querySelector('#doctorsTable tbody');
         tableBody.innerHTML = '';
 
-        // Проходим по данным и добавляем строки в таблицу
-        const rowCount = tableData.patient_FIO.length; // Количество строк
-        for (let i = 0; i < rowCount; i++) {
-          if (tableData.patient_FIO[i] === patient_FIO) {
-            const row = tableBody.insertRow();
-            row.insertCell().textContent = tableData.FIO_user[i] || ''; // Состав МКБ
-            row.insertCell().textContent = tableData.uchastie[i] || ''; // Участие в МКБ
-            row.insertCell().textContent = tableData.target[i] || ''; // Цель
-            row.insertCell().textContent = tableData.Domen_C[i] || ''; // Домен и оценка по МКФ
-            row.insertCell().textContent = tableData.zadachi[i] || ''; // Задачи
-            row.insertCell().textContent = tableData.metodika[i] || ''; // Методика
-            row.insertCell().textContent = tableData.FIO_user[i] || ''; // Исполнитель (ФИО)
-            row.insertCell().textContent = tableData.ocenka_do_kursa[i] || ''; // Оценка по МКФ до курса
-            row.insertCell().textContent = tableData.ocenka_posle[i] || ''; // Оценка по МКФ после курса
-          }
-        }
+        // Группируем данные по участникам
+        const groupedData = groupDataByParticipant(tableData, patient_FIO);
+
+        // Добавляем отфильтрованные записи в таблицу
+        groupedData.forEach(participant => {
+          // Добавляем строку с участником
+          const participantRow = tableBody.insertRow();
+          participantRow.insertCell().textContent = participant.name || '';
+          participantRow.insertCell().textContent = participant.uchastie || '';
+          participantRow.insertCell().textContent = participant.target || '';
+          participantRow.insertCell().textContent = '';
+          participantRow.insertCell().textContent = '';
+          participantRow.insertCell().textContent = '';
+          participantRow.insertCell().textContent = '';
+          participantRow.insertCell().textContent = '';
+
+          // Добавляем строки с целями, задачами и методиками
+          participant.goals.forEach(goal => {
+            goal.tasks.forEach((task, index) => {
+              const taskRow = tableBody.insertRow();
+              taskRow.insertCell().textContent = ''; // Участник (пусто, так как это подстрока)
+              taskRow.insertCell().textContent = ''; // Участие (пусто, так как это подстрока)
+              taskRow.insertCell().textContent = index === 0 ? goal.target : ''; // Цель (только для первой строки)
+              taskRow.insertCell().textContent = task.Domen_C || ''; // МКФ
+              taskRow.insertCell().textContent = task.zadachi || ''; // Задачи
+              taskRow.insertCell().textContent = task.metodika || ''; // Методика
+              taskRow.insertCell().textContent = task.ocenka_do_kursa || ''; // Оценка до курса
+              taskRow.insertCell().textContent = task.ocenka_posle || ''; // Оценка после курса
+            });
+          });
+        });
       } catch (error) {
         console.error("Ошибка при фильтрации записей:", error); // Отладка
       }
+    }
+
+    // Функция для группировки данных по участникам
+    function groupDataByParticipant(tableData, patient_FIO) {
+      const groupedData = [];
+      const rowCount = tableData.patient_FIO.length;
+
+      for (let i = 0; i < rowCount; i++) {
+        if (tableData.patient_FIO[i] === patient_FIO) {
+          const participantName = tableData.FIO_user[i];
+          const target = tableData.target[i];
+          const zadachi = tableData.zadachi[i];
+          const metodika = tableData.metodika[i];
+          const Domen_C = tableData.Domen_C[i];
+          const ocenka_do_kursa = tableData.ocenka_do_kursa[i];
+          const ocenka_posle = tableData.ocenka_posle[i];
+
+          // Ищем участника в groupedData
+          let participant = groupedData.find(p => p.name === participantName);
+          if (!participant) {
+            participant = {
+              name: participantName,
+              uchastie: tableData.uchastie[i],
+              goals: []
+            };
+            groupedData.push(participant);
+          }
+
+          // Ищем цель в goals участника
+          let goal = participant.goals.find(g => g.target === target);
+          if (!goal) {
+            goal = {
+              target: target,
+              tasks: []
+            };
+            participant.goals.push(goal);
+          }
+
+          // Добавляем задачу в цель
+          goal.tasks.push({
+            Domen_C: Domen_C,
+            zadachi: zadachi,
+            metodika: metodika,
+            ocenka_do_kursa: ocenka_do_kursa,
+            ocenka_posle: ocenka_posle
+          });
+        }
+      }
+
+      return groupedData;
     }
     </script>
 </body>
