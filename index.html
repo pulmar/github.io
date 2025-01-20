@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Протокол работы мультидисциплинарной бригады</title>
     
-        <!-- A template for showing an invoice in a Custom Widget in Grist. -->
+    <!-- A template for showing an invoice in a Custom Widget in Grist. -->
     <!-- Uses Vue.js, moment, and the Grist Plugin API -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.3/vue.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
@@ -28,17 +28,22 @@
     <p><strong>Реабилитационный диагноз:</strong> <span id="reabilitacionnyi_diagnoz"></span></p>
 
     <table id="doctorsTable">
-        <tr>
-            <th>Состав МКБ</th>
-            <th>Участие в МКБ</th>
-            <th>Цель</th>
-            <th>Домен и оценка по МКФ</th>
-            <th>Задачи</th>
-            <th>Методика</th>
-            <th>Исполнитель (ФИО)</th>
-            <th>Оценка по МКФ до курса</th>
-            <th>Оценка по МКФ после курса</th>
-        </tr>
+        <thead>
+            <tr>
+                <th>Состав МКБ</th>
+                <th>Участие в МКБ</th>
+                <th>Цель</th>
+                <th>Домен и оценка по МКФ</th>
+                <th>Задачи</th>
+                <th>Методика</th>
+                <th>Исполнитель (ФИО)</th>
+                <th>Оценка по МКФ до курса</th>
+                <th>Оценка по МКФ после курса</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Строки будут добавлены сюда -->
+        </tbody>
     </table>
 
     <p><strong>Врач ФРМ (ФИО):</strong> <span id="vrach_frm"></span> <span style="float: right;">Подпись _______________</span></p>
@@ -46,25 +51,21 @@
     <script>
     grist.ready({
       requiredAccess: 'read table',
-      columns: ['fio', 'vozrast', 'diagnoz', 'data_zasedaniya', 'reabilitacionnyi_diagnoz', 'vrach_frm']
+      columns: ['fio', 'vozrast', 'diagnoz', 'data_zasedaniya', 'reabilitacionnyi_diagnoz', 'vrach_frm', 'fio_sotr', 'uchastie_v_mkb', 'cel', 'domen_i_ocenka_po_mkf', 'zadachi', 'metodika', 'ocenka_po_mkf_do_kursa', 'ocenka_po_mkf_posle_kursa']
     });
 
     grist.onRecord(function(record) {
-      document.getElementById('fio').textContent = record.patient_FIO;
+      document.getElementById('fio').textContent = record.fio;
       document.getElementById('vozrast').textContent = record.vozrast;
-      document.getElementById('diagnoz').textContent = record.Diagnoz;
+      document.getElementById('diagnoz').textContent = record.diagnoz;
       document.getElementById('data_zasedaniya').textContent = record.data_zasedaniya;
       document.getElementById('reabilitacionnyi_diagnoz').textContent = record.reabilitacionnyi_diagnoz;
       document.getElementById('vrach_frm').textContent = record.vrach_frm;
     });
 
-    grist.ready({
-      requiredAccess: 'read table',
-      columns: ['fio_sotr', 'uchastie_v_mkb', 'cel', 'domen_i_ocenka_po_mkf', 'zadachi', 'metodika', 'ocenka_po_mkf_do_kursa', 'ocenka_po_mkf_posle_kursa']
-    });
-
     grist.onRecords(function(records) {
-      var tableBody = document.getElementById('Table3');
+      var tableBody = document.querySelector('#doctorsTable tbody');
+      tableBody.innerHTML = ''; // Очищаем таблицу перед добавлением новых данных
       records.forEach(function(record) {
         var row = tableBody.insertRow();
         row.insertCell().textContent = record.fio_sotr;
