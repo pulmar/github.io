@@ -124,64 +124,13 @@
             font-size: 20px;
         }
 
-        /* Стили для модального окна */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-content {
-            background-color: #fff;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-            border-radius: 8px;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
+        /* Стили для редактируемых ячеек */
+        #doctorsTable tbody td {
             cursor: pointer;
         }
 
-        .close:hover {
-            color: #000;
-        }
-
-        .modal-form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .modal-form input, .modal-form textarea {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        .modal-form button {
-            padding: 10px;
-            background-color: #2c3e50;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .modal-form button:hover {
-            background-color: #34495e;
+        #doctorsTable tbody td:hover {
+            background-color: #f0f0f0;
         }
 
         /* Стили для печати */
@@ -260,36 +209,12 @@
                 <th>Методика</th>
                 <th>Оценка функции до курса</th>
                 <th>Оценка функции после курса</th>
-                <th>Действия</th>
             </tr>
         </thead>
         <tbody>
             <!-- Строки будут добавлены сюда -->
         </tbody>
     </table>
-
-    <!-- Кнопка для добавления новой строки -->
-    <button id="addRowButton" style="margin: 20px; padding: 10px; background-color: #2c3e50; color: #fff; border: none; border-radius: 4px; cursor: pointer;">
-        Добавить строку
-    </button>
-
-    <!-- Модальное окно для редактирования и добавления данных -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <form id="editForm" class="modal-form">
-                <input type="text" id="editFIO" placeholder="Участник МДРК">
-                <input type="text" id="editUchastie" placeholder="Участие">
-                <input type="text" id="editTarget" placeholder="Цель">
-                <input type="text" id="editDomenC" placeholder="МКФ">
-                <input type="text" id="editZadachi" placeholder="Задачи">
-                <input type="text" id="editMetodika" placeholder="Методика">
-                <input type="text" id="editOcenkaDo" placeholder="Оценка функции до курса">
-                <input type="text" id="editOcenkaPosle" placeholder="Оценка функции после курса">
-                <button type="submit">Сохранить</button>
-            </form>
-        </div>
-    </div>
 
     <!-- Блок с подписью врача -->
     <div class="doctor-signature">
@@ -358,7 +283,6 @@
           participantRow.insertCell().textContent = ''; // Методика (пусто, так как это подстрока)
           participantRow.insertCell().textContent = ''; // Оценка до курса (пусто, так как это подстрока)
           participantRow.insertCell().textContent = ''; // Оценка после курса (пусто, так как это подстрока)
-          participantRow.insertCell().innerHTML = `<button onclick="editRow(${rowNumber - 1})">✏️</button>`;
 
           // Добавляем строки с целями, задачами и методиками
           participant.goals.forEach(goal => {
@@ -373,7 +297,6 @@
             goalRow.insertCell().textContent = ''; // Методика (пусто, так как это подстрока)
             goalRow.insertCell().textContent = ''; // Оценка до курса (пусто, так как это подстрока)
             goalRow.insertCell().textContent = ''; // Оценка после курса (пусто, так как это подстрока)
-            goalRow.insertCell().innerHTML = `<button onclick="editRow(${rowNumber - 1})">✏️</button>`;
 
             goal.tasks.forEach(task => {
               const taskRow = tableBody.insertRow();
@@ -387,8 +310,16 @@
               taskRow.insertCell().textContent = task.metodika || ''; // Методика
               taskRow.insertCell().textContent = task.ocenka_do_kursa || ''; // Оценка до курса
               taskRow.insertCell().textContent = task.ocenka_posle || ''; // Оценка после курса
-              taskRow.insertCell().innerHTML = `<button onclick="editRow(${rowNumber - 1})">✏️</button>`;
             });
+          });
+        });
+
+        // Добавляем обработчики клика для редактирования ячеек
+        document.querySelectorAll('#doctorsTable tbody td').forEach(cell => {
+          cell.addEventListener('click', function() {
+            if (!cell.classList.contains('no-edit')) {
+              showDropdown(cell);
+            }
           });
         });
       } catch (error) {
@@ -446,53 +377,56 @@
       return groupedData;
     }
 
-    // Логика для модального окна
-    const modal = document.getElementById('editModal');
-    const closeBtn = document.querySelector('.close');
-    const addRowButton = document.getElementById('addRowButton');
-    const editForm = document.getElementById('editForm');
+    // Функция для отображения выпадающего списка
+    async function showDropdown(cell) {
+      const columnName = getColumnNameByCellIndex(cell.cellIndex);
+      const tableData = await grist.fetchSelectedTable();
+      const uniqueValues = [...new Set(tableData[columnName])];
 
-    // Открытие модального окна для редактирования
-    function editRow(rowIndex) {
-      const row = document.querySelectorAll('#doctorsTable tbody tr')[rowIndex];
-      document.getElementById('editFIO').value = row.cells[1].textContent;
-      document.getElementById('editUchastie').value = row.cells[2].textContent;
-      document.getElementById('editTarget').value = row.cells[3].textContent;
-      document.getElementById('editDomenC').value = row.cells[4].textContent;
-      document.getElementById('editZadachi').value = row.cells[5].textContent;
-      document.getElementById('editMetodika').value = row.cells[6].textContent;
-      document.getElementById('editOcenkaDo').value = row.cells[7].textContent;
-      document.getElementById('editOcenkaPosle').value = row.cells[8].textContent;
-      modal.style.display = 'block';
+      const select = document.createElement('select');
+      uniqueValues.forEach(value => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = value;
+        select.appendChild(option);
+      });
+
+      select.value = cell.textContent;
+      cell.innerHTML = '';
+      cell.appendChild(select);
+      select.focus();
+
+      select.addEventListener('change', function() {
+        cell.textContent = select.value;
+        updateGrist(cell);
+      });
+
+      select.addEventListener('blur', function() {
+        cell.textContent = select.value;
+        updateGrist(cell);
+      });
     }
 
-    // Закрытие модального окна
-    closeBtn.onclick = function() {
-      modal.style.display = 'none';
+    // Функция для определения имени столбца по индексу ячейки
+    function getColumnNameByCellIndex(cellIndex) {
+      const columns = [
+        'FIO_user', 'uchastie', 'target', 'Domen_C', 'zadachi', 'metodika', 'ocenka_do_kursa', 'ocenka_posle'
+      ];
+      return columns[cellIndex - 1];
     }
 
-    // Добавление новой строки
-    addRowButton.onclick = function() {
-      modal.style.display = 'block';
-    }
+    // Функция для обновления данных в Grist
+    async function updateGrist(cell) {
+      const rowIndex = cell.parentElement.rowIndex - 1;
+      const columnName = getColumnNameByCellIndex(cell.cellIndex);
+      const newValue = cell.textContent;
 
-    // Сохранение данных из модального окна
-    editForm.onsubmit = function(event) {
-      event.preventDefault();
-      const newRow = {
-        FIO_user: document.getElementById('editFIO').value,
-        uchastie: document.getElementById('editUchastie').value,
-        target: document.getElementById('editTarget').value,
-        Domen_C: document.getElementById('editDomenC').value,
-        zadachi: document.getElementById('editZadachi').value,
-        metodika: document.getElementById('editMetodika').value,
-        ocenka_do_kursa: document.getElementById('editOcenkaDo').value,
-        ocenka_posle: document.getElementById('editOcenkaPosle').value
-      };
+      const tableData = await grist.fetchSelectedTable();
+      const recordId = tableData.id[rowIndex];
 
-      // Здесь можно добавить логику для сохранения данных в Grist
-      console.log("Новая строка:", newRow);
-      modal.style.display = 'none';
+      await grist.docApi.applyUserActions([
+        ['UpdateRecord', '_grist_Tables', recordId, { [columnName]: newValue }]
+      ]);
     }
     </script>
 </body>
