@@ -77,10 +77,8 @@
     // Функция для фильтрации записей по patient_FIO
     async function filterRecordsByFio(patient_FIO) {
       try {
-        // Получаем таблицу
-        const table = await grist.getTable();
         // Получаем все записи из таблицы
-        const allRecords = await table.fetchTable();
+        const allRecords = await grist.fetchSelectedTable();
         console.log("Все записи:", allRecords); // Отладка
 
         // Фильтруем записи по выбранному patient_FIO
